@@ -43,7 +43,8 @@ int main() {
             cout << "Enter a maximum that is greater than the minimum: ";
             cin >> max;
         }
-        string command = python + " ../info.py " + to_string(min) + " " + to_string(max);
+        // if you're using CLion, do ../info.py
+        string command = python + " info.py " + to_string(min) + " " + to_string(max);
         system(command.c_str());
         timesPlayed++;
 
