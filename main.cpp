@@ -11,84 +11,68 @@ const std::string python = "python3";
 
 using namespace std;
 
-vector<int> getColors();
+string getInput(string prompt);
 
-int main(){
+int main() {
     string fileName;
-    cout << "Enter the name of your text file (without the extension): ";
-    getline(cin, fileName);
-    string command = python + " ../info.py " + fileName;
-    system(command.c_str());
-    cout << "Processing some statistics...";
-    vector<int> colorVec = getColors();
-    int red = colorVec[0];
-    int green = colorVec[1];
-    int blue = colorVec[2];
+    string choice;
+    int timesPlayed = 0;
+    bool cont;
 
-    cout << "The RGB of your story is: " << red << ", " << green << ", " << blue << endl;
+    choice = getInput("Would you like to play a game? (Y/N): ");
+    while (choice != "y" && choice != "n") {
+        choice = getInput("Would you like to play a game? (Y/N): ");
+    }
+    if (choice == "y") {
+        cont = true;
+    } else {
+        cont = false;
+    }
+    while (cont) {
+        cout << "Enter a minimum number: ";
+        int min;
+        int max;
+        cin >> min;
+        while (min < 0) {
+            cout << "enter a positive value: ";
+            cin >> min;
+        }
+        cout << "Enter a maximum number: ";
+        cin >> max;
+        while (max < min) {
+            cout << "Enter a maximum that is greater than the minimum: ";
+            cin >> max;
+        }
+        string command = python + " ../info.py " + to_string(min) + " " + to_string(max);
+        system(command.c_str());
+        timesPlayed++;
+
+        string secondchoice;
+        // this calls twice and I can't even begin to understand why.. I've tried an abundance of fixes
+        // in debugger mode it calls the function once, but on the first pass doesn't print the prompt
+        // or wait for user input.. I just don't know
+        while(secondchoice != "y" && secondchoice != "n"){
+            secondchoice = getInput("Would you like to play a game? (Y/N): ");
+        }
+        if (secondchoice == "n"){
+            cont = false;
+        }
+    }
+    if (timesPlayed == 0) {
+        cout << "Then why'd you even start me?" << endl;
+    } else {
+        cout << "You played " + to_string(timesPlayed) + " times" << endl;
+        cout << "Thanks for playing, even though I always won." << endl;
+    }
 }
 
-
-
-vector<int> getColors(){
-    ifstream inFile;
-    inFile.open ("colorfile.txt");
-    string line;
-    vector<int> intVec;
-    vector<int> colorVec;
-    while (getline(inFile, line)){
-        for (int i = 0; i < line.size(); ++i){
-            if (isdigit(line[i])){
-                intVec.push_back(line[i]);
-            }
-        }
+string getInput(string prompt){
+    string input;
+    string lowString;
+    cout << prompt;
+    getline(cin, input);
+    for (int i =0; i < input.size(); ++i){
+        lowString.push_back(tolower(input[i]));
     }
-    int addme = 0;
-    int temp = 0;
-    for(int q = 0; q < intVec.size(); q++){
-        if (q == 0 || q == 1 || q == 2){
-            if (q == 0){
-                addme = intVec[q];
-                addme = addme * 100;
-            } else if (q == 1){
-                temp = intVec[q];
-                temp = temp * 10;
-                addme = addme + temp;
-            } else if (q == 2){
-                temp = intVec[q];
-                addme = addme + temp;
-                colorVec.push_back(addme);
-            }
-        } else if (q == 3 || q == 4 || q == 5){
-            if (q == 3){
-                addme = intVec[q];
-                addme = addme * 100;
-            } else if (q == 4){
-                temp = intVec[q];
-                temp = temp * 10;
-                addme = addme + temp;
-            }else if (q == 5){
-                temp = intVec[q];
-                addme = addme + temp;
-                colorVec.push_back(addme);
-            }
-        } else if (q == 6 || q == 7 || q == 8) {
-            if (q == 6) {
-                addme = intVec[q];
-                addme = addme * 100;
-            } else if (q == 7) {
-                temp = intVec[q];
-                temp = temp * 10;
-                addme = addme + temp;
-            } else if (q == 8) {
-                temp = intVec[q];
-                addme = addme + temp;
-                colorVec.push_back(addme);
-            }
-        }else{
-            cout << "not possible" << endl;
-        }
-    }
-    inFile.close();
-    return colorVec;
+    return lowString;
 }

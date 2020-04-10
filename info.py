@@ -1,34 +1,69 @@
 import sys
-import os
 
-try:
-    fileName = sys.argv[1]
+def getStats(smin, smax):
+    max = int(smax)
+    min = int(smin)
+    range = max - min
+    print('The range is: ' + str(range))
+    midpoint = (float(max + min)/2.0)
+    print('The midpoint is ' + str(midpoint))
 
-except:
-    print('not enough arguments')
+def getLowGuesses(smin, smax):
+    max = int(smax)
+    min = int(smin)
+    midpoint = (max + min) / 2
+    guesses = 0
+    difference = max - min
+    while difference > 2:
+        max = midpoint
+        midpoint = (max + min) / 2
+        difference = max - min
+        guesses += 1
 
-red = 0
-blue = 0
-green = 0
+    return guesses
 
-try:
-    file = open('../' + 'hare.txt')
-    for line in file:
-        for letter in line:
-            if letter.islower():
-                red += 1
-            elif letter.isupper():
-                blue += 1
-            elif letter.isnumeric():
-                green += 1
+
+def guessingGame(smin, smax):
+    max = int(smax)
+    min = int(smin)
+    correct = False
+    guess = 0
+    while (not(correct)):
+        guess = int((max + min)/2)
+        try:
+            choice = input('My guess is... ' + str(guess) + '. Is that right, high or low? (c for correct, h for high, l for low): ')
+            if (choice.lower() == 'c'):
+                correct = True
+            elif (choice.lower() == 'h'):
+                if (max - min == 1):
+                    print("You're lying...it's " + str(guess))
+                    break
+                max = guess
+            elif (choice.lower() == 'l'):
+                if (max - min == 1):
+                    print("You're lying... it's " + str(guess))
+                    break
+                min = guess
             else:
-                green += 1
-    file.close()
-    oFile = open("colorfile.txt", 'r')
-    oFile.write(str(red) + '\n')
-    oFile.write(str(green) + '\n')
-    oFile.write(str(blue) + '\n')
-    oFile.close()
+                print("That wasn't an option...")
+        except TypeError:
+            print("Enter H, C or L.")
 
-except IOError:
-    print('Could not find the file')
+    print("I told you I could guess it.")
+
+
+try:
+    min = sys.argv[1]
+    max = sys.argv[2]
+    print('Minimum number: ' + min)
+    print('Maximum number: ' + max)
+    getStats(min, max)
+    print("I bet if you a think of a number between " + min + " and " + max + " I can guess it in under " + str(getLowGuesses(min, max) + 1) + " guesses.")
+    input("Do you believe me? : ")
+    print("It doesn't matter what you say, I'll prove it.")
+    guessingGame(min, max)
+    sys.exit()
+except IndexError:
+    print('not enough arguments passed to system')
+    sys.exit()
+
